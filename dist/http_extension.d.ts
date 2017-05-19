@@ -1,5 +1,6 @@
 /// <reference types="node" />
-import { DependencyInjectionContainer } from 'addict-ioc';
+/// <reference types="express" />
+import { Container } from 'addict-ioc';
 import * as Express from 'express';
 import { Server } from 'http';
 export declare class HttpExtension {
@@ -8,9 +9,9 @@ export declare class HttpExtension {
     private _app;
     protected _server: Server;
     config: any;
-    constructor(container: DependencyInjectionContainer);
+    constructor(container: Container);
     readonly routers: any;
-    readonly container: DependencyInjectionContainer;
+    readonly container: Container;
     readonly app: Express.Application;
     readonly server: Server;
     initialize(): Promise<void>;

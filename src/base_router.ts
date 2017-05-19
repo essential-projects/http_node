@@ -1,7 +1,8 @@
 import * as Express from 'express';
 import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
+import {IHttpRouter} from '@process-engine-js/http_contracts';
 
-export class BaseRouter {
+export class BaseRouter implements IHttpRouter {
 
   private _router: Express.Router = undefined;
 
@@ -30,5 +31,5 @@ export class BaseRouter {
     return extensionHook(this.initializeRouter, this);
   }
 
-  protected initializeRouter(): Promise<any> | any { }
+  public initializeRouter(): Promise<any> | any { }
 }
