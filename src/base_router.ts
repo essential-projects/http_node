@@ -8,9 +8,7 @@ export class BaseRouter implements IHttpRouter {
 
   public config: any = undefined;
 
-  constructor() {
-    
-  }
+  constructor() { }
 
   get router(): Express.Router {
     if (!this._router) {

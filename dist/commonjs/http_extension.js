@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Express = require("express");
 var BluebirdPromise = require("bluebird");
 var utils_1 = require("@process-engine-js/utils");

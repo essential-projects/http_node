@@ -4,7 +4,6 @@ import * as BluebirdPromise from 'bluebird';
 import {Server} from 'http';
 import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import * as BodyParser from 'body-parser';
-import * as ExpressLogger from 'morgan';
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
 import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
 
@@ -60,11 +59,10 @@ export class HttpExtension implements IHttpExtension {
       });
   }
 
-
   protected initializeRouters(): Promise<void> {
 
     let routerNames;
-    
+
     const allRouterNames = this.container.getKeysByTags(RouterDiscoveryTag);
 
     this.container.validateDependencies();
@@ -93,14 +91,17 @@ export class HttpExtension implements IHttpExtension {
       })
       .then(() => {
 
-        const serialPromise = routerNames.reduce((prevPromise, routerName) => {
+        const serialPromise = routerNames.reduce(
+          (prevPromise, routerName) => {
 
-          return prevPromise.then(() => {
+            return prevPromise.then(() => {
 
-            return this.initializeRouter(routerName);
-          });
+              return this.initializeRouter(routerName);
+            });
 
-        }, BluebirdPromise.resolve());
+          },
+          BluebirdPromise.resolve()
+        );
 
         return serialPromise;
       });
@@ -116,7 +117,7 @@ export class HttpExtension implements IHttpExtension {
     }
 
     const routerInstance = this.container.resolve<IHttpRouter>(routerName);
-    
+
     return extensionHook(routerInstance.initialize, routerInstance)
       .then(() => {
 

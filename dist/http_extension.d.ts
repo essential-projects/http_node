@@ -1,5 +1,3 @@
-/// <reference types="node" />
-/// <reference types="express" />
 import { Container } from 'addict-ioc';
 import * as Express from 'express';
 import { Server } from 'http';

@@ -1,4 +1,3 @@
-/// <reference types="express" />
 import * as Express from 'express';
 import { IHttpRouter } from '@process-engine-js/http_contracts';
 export declare class BaseRouter implements IHttpRouter {
