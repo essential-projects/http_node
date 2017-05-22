@@ -3,7 +3,8 @@
 import { Container } from 'addict-ioc';
 import * as Express from 'express';
 import { Server } from 'http';
-export declare class HttpExtension {
+import { IHttpExtension } from '@process-engine-js/http_contracts';
+export declare class HttpExtension implements IHttpExtension {
     private _container;
     private _routers;
     private _app;

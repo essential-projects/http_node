@@ -6,9 +6,9 @@ import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/u
 import * as BodyParser from 'body-parser';
 import * as ExpressLogger from 'morgan';
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
-import {IHttpRouter} from '@process-engine-js/http_contracts';
+import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
 
-export class HttpExtension {
+export class HttpExtension implements IHttpExtension {
 
   private _container: Container = undefined;
   private _routers: any = {};
