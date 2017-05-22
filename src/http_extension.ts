@@ -1,22 +1,22 @@
-import {DependencyInjectionContainer} from 'addict-ioc';
+import {Container} from 'addict-ioc';
 import * as Express from 'express';
 import * as BluebirdPromise from 'bluebird';
 import {Server} from 'http';
 import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import * as BodyParser from 'body-parser';
-import * as ExpressLogger from 'morgan';
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
+import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
 
-export class HttpExtension {
+export class HttpExtension implements IHttpExtension {
 
-  private _container: DependencyInjectionContainer = undefined;
+  private _container: Container = undefined;
   private _routers: any = {};
   private _app: Express.Application = undefined;
   protected _server: Server = undefined;
 
   public config: any = undefined;
 
-  constructor(container: DependencyInjectionContainer) {
+  constructor(container: Container) {
     this._container = container;
   }
 
@@ -24,7 +24,7 @@ export class HttpExtension {
     return this._routers;
   }
 
-  get container(): DependencyInjectionContainer {
+  get container(): Container {
     return this._container;
   }
 
@@ -59,11 +59,10 @@ export class HttpExtension {
       });
   }
 
-
   protected initializeRouters(): Promise<void> {
 
     let routerNames;
-    
+
     const allRouterNames = this.container.getKeysByTags(RouterDiscoveryTag);
 
     this.container.validateDependencies();
@@ -92,14 +91,17 @@ export class HttpExtension {
       })
       .then(() => {
 
-        const serialPromise = routerNames.reduce((prevPromise, routerName) => {
+        const serialPromise = routerNames.reduce(
+          (prevPromise, routerName) => {
 
-          return prevPromise.then(() => {
+            return prevPromise.then(() => {
 
-            return this.initializeRouter(routerName);
-          });
+              return this.initializeRouter(routerName);
+            });
 
-        }, BluebirdPromise.resolve());
+          },
+          BluebirdPromise.resolve()
+        );
 
         return serialPromise;
       });
@@ -114,8 +116,8 @@ export class HttpExtension {
       throw new Error(`There is no router registered for key '${routerName}'`);
     }
 
-    const routerInstance = this.container.resolve(routerName);
-    
+    const routerInstance = this.container.resolve<IHttpRouter>(routerName);
+
     return extensionHook(routerInstance.initialize, routerInstance)
       .then(() => {
 

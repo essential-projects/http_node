@@ -1,16 +1,16 @@
-/// <reference types="node" />
-import { DependencyInjectionContainer } from 'addict-ioc';
+import { Container } from 'addict-ioc';
 import * as Express from 'express';
 import { Server } from 'http';
-export declare class HttpExtension {
+import { IHttpExtension } from '@process-engine-js/http_contracts';
+export declare class HttpExtension implements IHttpExtension {
     private _container;
     private _routers;
     private _app;
     protected _server: Server;
     config: any;
-    constructor(container: DependencyInjectionContainer);
+    constructor(container: Container);
     readonly routers: any;
-    readonly container: DependencyInjectionContainer;
+    readonly container: Container;
     readonly app: Express.Application;
     readonly server: Server;
     initialize(): Promise<void>;
