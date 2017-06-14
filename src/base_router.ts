@@ -1,3 +1,5 @@
+/* tslint:disable:no-empty */
+
 import * as Express from 'express';
 import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import {IHttpRouter} from '@process-engine-js/http_contracts';

@@ -66,7 +66,7 @@ var HttpExtension = (function () {
         this.container.validateDependencies();
         return utils_1.executeAsExtensionHookAsync(this.filterRouters, this, allRouterNames)
             .then(function (filteredRouterNames) {
-            if (typeof filteredRouterNames === 'undefined' || filteredRouterNames == null) {
+            if (typeof filteredRouterNames === 'undefined' || filteredRouterNames === null) {
                 routerNames = allRouterNames;
             }
             else {

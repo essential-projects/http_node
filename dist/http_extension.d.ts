@@ -1,4 +1,4 @@
-import { Container } from 'addict-ioc';
+import { Container, IInstanceWrapper } from 'addict-ioc';
 import * as Express from 'express';
 import { Server } from 'http';
 import { IHttpExtension } from '@process-engine-js/http_contracts';
@@ -8,9 +8,9 @@ export declare class HttpExtension implements IHttpExtension {
     private _app;
     protected _server: Server;
     config: any;
-    constructor(container: Container);
+    constructor(container: Container<IInstanceWrapper<any>>);
     readonly routers: any;
-    readonly container: Container;
+    readonly container: Container<IInstanceWrapper<any>>;
     readonly app: Express.Application;
     readonly server: Server;
     initialize(): Promise<void>;

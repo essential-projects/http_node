@@ -1,4 +1,6 @@
-import {Container} from 'addict-ioc';
+/* tslint:disable:no-empty */
+
+import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as Express from 'express';
 import * as BluebirdPromise from 'bluebird';
 import {Server} from 'http';
@@ -9,14 +11,14 @@ import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
 
 export class HttpExtension implements IHttpExtension {
 
-  private _container: Container = undefined;
+  private _container: Container<IInstanceWrapper<any>> = undefined;
   private _routers: any = {};
   private _app: Express.Application = undefined;
   protected _server: Server = undefined;
 
   public config: any = undefined;
 
-  constructor(container: Container) {
+  constructor(container: Container<IInstanceWrapper<any>>) {
     this._container = container;
   }
 
@@ -24,7 +26,7 @@ export class HttpExtension implements IHttpExtension {
     return this._routers;
   }
 
-  get container(): Container {
+  get container(): Container<IInstanceWrapper<any>> {
     return this._container;
   }
 
@@ -70,7 +72,7 @@ export class HttpExtension implements IHttpExtension {
     return extensionHook(this.filterRouters, this, allRouterNames)
       .then((filteredRouterNames) => {
 
-        if (typeof filteredRouterNames === 'undefined' || filteredRouterNames == null) {
+        if (typeof filteredRouterNames === 'undefined' || filteredRouterNames === null) {
 
           routerNames = allRouterNames;
 
