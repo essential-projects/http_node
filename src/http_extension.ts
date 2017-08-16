@@ -44,18 +44,23 @@ export class HttpExtension implements IHttpExtension {
 
   public initialize(): Promise<void> {
 
+    console.log('a')
     return extensionHook(this.initializeAppExtensions, this, this.app)
       .then(() => {
+        console.log('b')
 
         this.initializeBaseMiddleware(this.app);
 
+        console.log('c')
         return extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
       })
       .then(() => {
+        console.log('d')
 
         return this.initializeRouters();
       })
       .then(() => {
+        console.log('e')
 
         return extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
       });

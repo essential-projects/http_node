@@ -17,7 +17,7 @@
     "@process-engine-js/core_contracts": "^1.0.8",
     "@process-engine-js/http_contracts": "^1.0.1",
     "@process-engine-js/utils": "^1.0.0",
-    "addict-ioc": "^2.0.0",
+    "addict-ioc": "^2.2.0",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
