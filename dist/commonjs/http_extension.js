@@ -12,7 +12,6 @@ class HttpExtension {
         this._app = undefined;
         this._server = undefined;
         this.config = undefined;
-        console.log('-------------------asdasdasd-------------------');
         this._container = container;
     }
     get routers() {
@@ -75,16 +74,15 @@ class HttpExtension {
             return serialPromise;
         });
     }
-    initializeRouter(routerName) {
+    async initializeRouter(routerName) {
         if (!this.container.isRegistered(routerName)) {
             throw new Error(`There is no router registered for key '${routerName}'`);
         }
-        const routerInstance = this.container.resolve(routerName);
-        return utils_1.executeAsExtensionHookAsync(routerInstance.initialize, routerInstance)
-            .then(() => {
-            this.bindRoute(routerInstance);
-            this.routers[routerName] = routerInstance;
-        });
+        console.log('before router instance resolve', routerName);
+        const routerInstance = await this.container.resolveAsync(routerName);
+        console.log('after router instance resolve', routerName);
+        this.bindRoute(routerInstance);
+        this.routers[routerName] = routerInstance;
     }
     bindRoute(routerInstance) {
         const shieldingRouter = Express.Router();
@@ -92,6 +90,7 @@ class HttpExtension {
         this.app.use('/', shieldingRouter);
     }
     start() {
+        console.log('start');
         return new BluebirdPromise((resolve, reject) => {
             this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
                 console.log(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
