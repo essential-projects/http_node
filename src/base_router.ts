@@ -31,5 +31,5 @@ export class BaseRouter implements IHttpRouter {
     return extensionHook(this.initializeRouter, this);
   }
 
-  public initializeRouter(): Promise<any> | any { }
+  public initializeRouter(): Promise<any> | any { return; }
 }

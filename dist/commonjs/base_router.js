@@ -23,7 +23,7 @@ class BaseRouter {
     initialize() {
         return utils_1.executeAsExtensionHookAsync(this.initializeRouter, this);
     }
-    initializeRouter() { }
+    initializeRouter() { return; }
 }
 exports.BaseRouter = BaseRouter;
 

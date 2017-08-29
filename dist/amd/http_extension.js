@@ -100,13 +100,13 @@ define(["require", "exports", "express", "bluebird", "@process-engine-js/utils",
                 this.server.close();
             }
         }
-        initializeAppExtensions(app) { }
-        initializeMiddlewareBeforeRouters(app) { }
-        initializeMiddlewareAfterRouters(app) { }
+        initializeAppExtensions(app) { return; }
+        initializeMiddlewareBeforeRouters(app) { return; }
+        initializeMiddlewareAfterRouters(app) { return; }
         filterRouters(routerNames) {
             return routerNames;
         }
-        onStarted() { }
+        onStarted() { return; }
         initializeBaseMiddleware(app) {
             const opts = {};
             if (this.config && this.config.parseLimit) {

@@ -167,17 +167,17 @@ export class HttpExtension implements IHttpExtension {
     }
   }
 
-  protected initializeAppExtensions(app): Promise<any> | any { }
+  protected initializeAppExtensions(app): Promise<any> | any { return; }
 
-  protected initializeMiddlewareBeforeRouters(app): Promise<any> | any { }
+  protected initializeMiddlewareBeforeRouters(app): Promise<any> | any { return; }
 
-  protected initializeMiddlewareAfterRouters(app): Promise<any> | any { }
+  protected initializeMiddlewareAfterRouters(app): Promise<any> | any { return; }
 
   protected filterRouters(routerNames: Array<string>): Promise<Array<string>> | Array<string> {
     return routerNames;
   }
 
-  protected onStarted(): Promise<any> | any { }
+  protected onStarted(): Promise<any> | any { return; }
 
   protected initializeBaseMiddleware(app): void {
 

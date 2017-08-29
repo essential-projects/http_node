@@ -22,7 +22,7 @@ define(["require", "exports", "express", "@process-engine-js/utils"], function (
         initialize() {
             return utils_1.executeAsExtensionHookAsync(this.initializeRouter, this);
         }
-        initializeRouter() { }
+        initializeRouter() { return; }
     }
     exports.BaseRouter = BaseRouter;
 });
