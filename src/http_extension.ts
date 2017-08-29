@@ -5,7 +5,7 @@ import * as Express from 'express';
 import * as BluebirdPromise from 'bluebird';
 import {Server} from 'http';
 import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
-import * as BodyParser from 'body-parser';
+import * as bodyParser from 'body-parser';
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
 import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
 
@@ -189,6 +189,10 @@ export class HttpExtension implements IHttpExtension {
     //   }
     // }));
 
-    app.use(BodyParser.json());
+    const opts: any = {};
+    if (this.config && this.config.parseLimit) {
+      opts.limit = this.config.parseLimit;
+    }
+    app.use(bodyParser.json(opts));
   }
 }
