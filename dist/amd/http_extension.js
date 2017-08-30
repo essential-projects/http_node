@@ -25,23 +25,12 @@ define(["require", "exports", "express", "bluebird", "@process-engine-js/utils",
         get server() {
             return this._server;
         }
-        initialize() {
-            console.log('a');
-            return utils_1.executeAsExtensionHookAsync(this.initializeAppExtensions, this, this.app)
-                .then(() => {
-                console.log('b');
-                this.initializeBaseMiddleware(this.app);
-                console.log('c');
-                return utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareBeforeRouters, this, this.app);
-            })
-                .then(() => {
-                console.log('d');
-                return this.initializeRouters();
-            })
-                .then(() => {
-                console.log('e');
-                return utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareAfterRouters, this, this.app);
-            });
+        async initialize() {
+            await utils_1.executeAsExtensionHookAsync(this.initializeAppExtensions, this, this.app);
+            this.initializeBaseMiddleware(this.app);
+            await utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareBeforeRouters, this, this.app);
+            await this.initializeRouters();
+            await utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareAfterRouters, this, this.app);
         }
         initializeRouters() {
             let routerNames;
@@ -74,9 +63,7 @@ define(["require", "exports", "express", "bluebird", "@process-engine-js/utils",
             if (!this.container.isRegistered(routerName)) {
                 throw new Error(`There is no router registered for key '${routerName}'`);
             }
-            console.log('before router instance resolve', routerName);
             const routerInstance = await this.container.resolveAsync(routerName);
-            console.log('after router instance resolve', routerName);
             this.bindRoute(routerInstance);
             this.routers[routerName] = routerInstance;
         }
@@ -86,7 +73,6 @@ define(["require", "exports", "express", "bluebird", "@process-engine-js/utils",
             this.app.use('/', shieldingRouter);
         }
         start() {
-            console.log('start');
             return new BluebirdPromise((resolve, reject) => {
                 this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
                     console.log(`Started REST API ${this.config.server.host}:${this.config.server.port}`);

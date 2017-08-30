@@ -42,28 +42,12 @@ export class HttpExtension implements IHttpExtension {
     return this._server;
   }
 
-  public initialize(): Promise<void> {
-
-    console.log('a')
-    return extensionHook(this.initializeAppExtensions, this, this.app)
-      .then(() => {
-        console.log('b')
-
-        this.initializeBaseMiddleware(this.app);
-
-        console.log('c')
-        return extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
-      })
-      .then(() => {
-        console.log('d')
-
-        return this.initializeRouters();
-      })
-      .then(() => {
-        console.log('e')
-
-        return extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
-      });
+  public async initialize(): Promise<void> {
+    await extensionHook(this.initializeAppExtensions, this, this.app);
+    this.initializeBaseMiddleware(this.app);
+    await extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
+    await this.initializeRouters();
+    await extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
   }
 
   protected initializeRouters(): Promise<void> {
@@ -123,9 +107,7 @@ export class HttpExtension implements IHttpExtension {
       throw new Error(`There is no router registered for key '${routerName}'`);
     }
 
-    console.log('before router instance resolve', routerName)
     const routerInstance = await this.container.resolveAsync<IHttpRouter>(routerName);
-    console.log('after router instance resolve', routerName)
 
     this.bindRoute(routerInstance);
     this.routers[routerName] = routerInstance;
@@ -141,7 +123,6 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public start(): Promise<any> {
-    console.log('start');
     return new BluebirdPromise((resolve, reject) => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
