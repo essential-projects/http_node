@@ -1,4 +1,4 @@
-define(["require", "exports", "express", "bluebird", "@process-engine-js/utils", "body-parser", "@process-engine-js/core_contracts"], function (require, exports, Express, BluebirdPromise, utils_1, BodyParser, core_contracts_1) {
+define(["require", "exports", "express", "bluebird", "@process-engine-js/utils", "body-parser", "@process-engine-js/core_contracts"], function (require, exports, Express, BluebirdPromise, utils_1, bodyParser, core_contracts_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class HttpExtension {
@@ -91,15 +91,19 @@ define(["require", "exports", "express", "bluebird", "@process-engine-js/utils",
                 this.server.close();
             }
         }
-        initializeAppExtensions(app) { }
-        initializeMiddlewareBeforeRouters(app) { }
-        initializeMiddlewareAfterRouters(app) { }
+        initializeAppExtensions(app) { return; }
+        initializeMiddlewareBeforeRouters(app) { return; }
+        initializeMiddlewareAfterRouters(app) { return; }
         filterRouters(routerNames) {
             return routerNames;
         }
-        onStarted() { }
+        onStarted() { return; }
         initializeBaseMiddleware(app) {
-            app.use(BodyParser.json());
+            const opts = {};
+            if (this.config && this.config.parseLimit) {
+                opts.limit = this.config.parseLimit;
+            }
+            app.use(bodyParser.json(opts));
         }
     }
     exports.HttpExtension = HttpExtension;

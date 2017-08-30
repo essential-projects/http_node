@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Express = require("express");
 const BluebirdPromise = require("bluebird");
 const utils_1 = require("@process-engine-js/utils");
-const BodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const core_contracts_1 = require("@process-engine-js/core_contracts");
 class HttpExtension {
     constructor(container) {
@@ -95,15 +95,19 @@ class HttpExtension {
             this.server.close();
         }
     }
-    initializeAppExtensions(app) { }
-    initializeMiddlewareBeforeRouters(app) { }
-    initializeMiddlewareAfterRouters(app) { }
+    initializeAppExtensions(app) { return; }
+    initializeMiddlewareBeforeRouters(app) { return; }
+    initializeMiddlewareAfterRouters(app) { return; }
     filterRouters(routerNames) {
         return routerNames;
     }
-    onStarted() { }
+    onStarted() { return; }
     initializeBaseMiddleware(app) {
-        app.use(BodyParser.json());
+        const opts = {};
+        if (this.config && this.config.parseLimit) {
+            opts.limit = this.config.parseLimit;
+        }
+        app.use(bodyParser.json(opts));
     }
 }
 exports.HttpExtension = HttpExtension;
