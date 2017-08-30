@@ -29,18 +29,12 @@ class HttpExtension {
     get server() {
         return this._server;
     }
-    initialize() {
-        return utils_1.executeAsExtensionHookAsync(this.initializeAppExtensions, this, this.app)
-            .then(() => {
-            this.initializeBaseMiddleware(this.app);
-            return utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareBeforeRouters, this, this.app);
-        })
-            .then(() => {
-            return this.initializeRouters();
-        })
-            .then(() => {
-            return utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareAfterRouters, this, this.app);
-        });
+    async initialize() {
+        await utils_1.executeAsExtensionHookAsync(this.initializeAppExtensions, this, this.app);
+        this.initializeBaseMiddleware(this.app);
+        await utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareBeforeRouters, this, this.app);
+        await this.initializeRouters();
+        await utils_1.executeAsExtensionHookAsync(this.initializeMiddlewareAfterRouters, this, this.app);
     }
     initializeRouters() {
         let routerNames;
@@ -69,16 +63,13 @@ class HttpExtension {
             return serialPromise;
         });
     }
-    initializeRouter(routerName) {
+    async initializeRouter(routerName) {
         if (!this.container.isRegistered(routerName)) {
             throw new Error(`There is no router registered for key '${routerName}'`);
         }
-        const routerInstance = this.container.resolve(routerName);
-        return utils_1.executeAsExtensionHookAsync(routerInstance.initialize, routerInstance)
-            .then(() => {
-            this.bindRoute(routerInstance);
-            this.routers[routerName] = routerInstance;
-        });
+        const routerInstance = await this.container.resolveAsync(routerName);
+        this.bindRoute(routerInstance);
+        this.routers[routerName] = routerInstance;
     }
     bindRoute(routerInstance) {
         const shieldingRouter = Express.Router();

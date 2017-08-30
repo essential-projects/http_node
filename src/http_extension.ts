@@ -42,23 +42,12 @@ export class HttpExtension implements IHttpExtension {
     return this._server;
   }
 
-  public initialize(): Promise<void> {
-
-    return extensionHook(this.initializeAppExtensions, this, this.app)
-      .then(() => {
-
-        this.initializeBaseMiddleware(this.app);
-
-        return extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
-      })
-      .then(() => {
-
-        return this.initializeRouters();
-      })
-      .then(() => {
-
-        return extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
-      });
+  public async initialize(): Promise<void> {
+    await extensionHook(this.initializeAppExtensions, this, this.app);
+    this.initializeBaseMiddleware(this.app);
+    await extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
+    await this.initializeRouters();
+    await extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
   }
 
   protected initializeRouters(): Promise<void> {
@@ -109,7 +98,7 @@ export class HttpExtension implements IHttpExtension {
       });
   }
 
-  protected initializeRouter(routerName): Promise<void> {
+  protected async initializeRouter(routerName): Promise<void> {
 
     // logger.debug(`initialize ${routerName}`);
 
@@ -118,15 +107,10 @@ export class HttpExtension implements IHttpExtension {
       throw new Error(`There is no router registered for key '${routerName}'`);
     }
 
-    const routerInstance = this.container.resolve<IHttpRouter>(routerName);
+    const routerInstance = await this.container.resolveAsync<IHttpRouter>(routerName);
 
-    return extensionHook(routerInstance.initialize, routerInstance)
-      .then(() => {
-
-        this.bindRoute(routerInstance);
-
-        this.routers[routerName] = routerInstance;
-      });
+    this.bindRoute(routerInstance);
+    this.routers[routerName] = routerInstance;
   }
 
   protected bindRoute(routerInstance: any): void {
@@ -139,7 +123,6 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public start(): Promise<any> {
-
     return new BluebirdPromise((resolve, reject) => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
