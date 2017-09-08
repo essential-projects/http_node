@@ -25,7 +25,7 @@
     "morgan": "^1.7.0"
   },
   "devDependencies": {
-    "@process-engine-js/tslint-config": "^1.0.0",
+    "@process-engine-js/tslint-config": "^1.0.1",
     "@types/bluebird": "^3.5.8",
     "@types/express": "^4.0.37",
     "@types/node": "^8.0.27",
