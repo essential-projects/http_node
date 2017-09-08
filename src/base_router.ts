@@ -1,8 +1,8 @@
 /* tslint:disable:no-empty */
 
-import * as Express from 'express';
-import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import {IHttpRouter} from '@process-engine-js/http_contracts';
+import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
+import * as Express from 'express';
 
 export class BaseRouter implements IHttpRouter {
 
@@ -12,14 +12,14 @@ export class BaseRouter implements IHttpRouter {
 
   constructor() { }
 
-  get router(): Express.Router {
+  public get router(): Express.Router {
     if (!this._router) {
       this._router = Express.Router();
     }
     return this._router;
   }
 
-  get baseRoute(): string {
+  public get baseRoute(): string {
     const baseRoute = this.config.baseRoute;
     if (!baseRoute) {
       return '';
