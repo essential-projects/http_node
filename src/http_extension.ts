@@ -1,8 +1,8 @@
 /* tslint:disable:no-empty */
 
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
+import {runtime} from '@process-engine-js/foundation';
 import {IHttpExtension, IHttpRouter} from '@process-engine-js/http_contracts';
-import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as BluebirdPromise from 'bluebird';
 import * as bodyParser from 'body-parser';
@@ -43,11 +43,11 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public async initialize(): Promise<void> {
-    await extensionHook(this.initializeAppExtensions, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app);
     this.initializeBaseMiddleware(this.app);
-    await extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app);
     await this.initializeRouters();
-    await extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app);
   }
 
   protected initializeRouters(): Promise<void> {
@@ -58,7 +58,7 @@ export class HttpExtension implements IHttpExtension {
 
     this.container.validateDependencies();
 
-    return extensionHook(this.filterRouters, this, allRouterNames)
+    return runtime.invokeAsPromiseIfPossible(this.filterRouters, this, allRouterNames)
       .then((filteredRouterNames) => {
 
         if (typeof filteredRouterNames === 'undefined' || filteredRouterNames === null) {
@@ -130,7 +130,7 @@ export class HttpExtension implements IHttpExtension {
 
         // logger.info(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
 
-        extensionHook(this.onStarted, this)
+        runtime.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result) => {
             resolve(result);
           })

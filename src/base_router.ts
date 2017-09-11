@@ -1,7 +1,7 @@
 /* tslint:disable:no-empty */
 
+import {runtime} from '@process-engine-js/foundation';
 import {IHttpRouter} from '@process-engine-js/http_contracts';
-import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
 import * as Express from 'express';
 
 export class BaseRouter implements IHttpRouter {
@@ -28,7 +28,7 @@ export class BaseRouter implements IHttpRouter {
   }
 
   public initialize(): Promise<any> | any {
-    return extensionHook(this.initializeRouter, this);
+    return runtime.invokeAsPromiseIfPossible(this.initializeRouter, this);
   }
 
   public initializeRouter(): Promise<any> | any { return; }
