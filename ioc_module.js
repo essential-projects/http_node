@@ -3,8 +3,9 @@
 const AdapterPostgres = require('./dist/commonjs/index').AdapterPostgres;
 
 function registerInContainer(container) {
-  console.log('ABC')
-  container.register('HttpClient', HttpClient);
+
+  container.register('HttpClient', HttpClient)
+    .singleton();
 
 }
 
