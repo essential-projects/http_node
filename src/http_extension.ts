@@ -4,7 +4,6 @@ import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
 import {runtime} from '@process-engine-js/foundation';
 import {IHttpExtension, IHttpRouter} from '@process-engine-js/http_contracts';
 import {Container, IInstanceWrapper} from 'addict-ioc';
-import * as BluebirdPromise from 'bluebird';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
 import {Server} from 'http';
@@ -91,7 +90,7 @@ export class HttpExtension implements IHttpExtension {
             });
 
           },
-          BluebirdPromise.resolve(),
+          Promise.resolve(),
         );
 
         return serialPromise;
@@ -123,13 +122,11 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public start(): Promise<any> {
-    return new BluebirdPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
         console.log(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
-
-        // logger.info(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
-
+        
         runtime.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result) => {
             resolve(result);
