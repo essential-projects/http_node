@@ -1,13 +1,12 @@
 /* tslint:disable:no-empty */
 
-import {Container, IInstanceWrapper} from 'addict-ioc';
-import * as Express from 'express';
-import * as BluebirdPromise from 'bluebird';
-import {Server} from 'http';
-import {executeAsExtensionHookAsync as extensionHook} from '@process-engine-js/utils';
-import * as bodyParser from 'body-parser';
 import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
-import {IHttpRouter, IHttpExtension} from '@process-engine-js/http_contracts';
+import {runtime} from '@process-engine-js/foundation';
+import {IHttpExtension, IHttpRouter} from '@process-engine-js/http_contracts';
+import {Container, IInstanceWrapper} from 'addict-ioc';
+import * as bodyParser from 'body-parser';
+import * as Express from 'express';
+import {Server} from 'http';
 
 export class HttpExtension implements IHttpExtension {
 
@@ -22,15 +21,15 @@ export class HttpExtension implements IHttpExtension {
     this._container = container;
   }
 
-  get routers(): any {
+  public get routers(): any {
     return this._routers;
   }
 
-  get container(): Container<IInstanceWrapper<any>> {
+  public get container(): Container<IInstanceWrapper<any>> {
     return this._container;
   }
 
-  get app(): Express.Application {
+  public get app(): Express.Application {
     if (!this._app) {
       this._app = Express();
     }
@@ -38,16 +37,16 @@ export class HttpExtension implements IHttpExtension {
     return this._app;
   }
 
-  get server(): Server {
+  public get server(): Server {
     return this._server;
   }
 
   public async initialize(): Promise<void> {
-    await extensionHook(this.initializeAppExtensions, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app);
     this.initializeBaseMiddleware(this.app);
-    await extensionHook(this.initializeMiddlewareBeforeRouters, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app);
     await this.initializeRouters();
-    await extensionHook(this.initializeMiddlewareAfterRouters, this, this.app);
+    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app);
   }
 
   protected initializeRouters(): Promise<void> {
@@ -58,7 +57,7 @@ export class HttpExtension implements IHttpExtension {
 
     this.container.validateDependencies();
 
-    return extensionHook(this.filterRouters, this, allRouterNames)
+    return runtime.invokeAsPromiseIfPossible(this.filterRouters, this, allRouterNames)
       .then((filteredRouterNames) => {
 
         if (typeof filteredRouterNames === 'undefined' || filteredRouterNames === null) {
@@ -91,7 +90,7 @@ export class HttpExtension implements IHttpExtension {
             });
 
           },
-          BluebirdPromise.resolve()
+          Promise.resolve(),
         );
 
         return serialPromise;
@@ -123,14 +122,12 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public start(): Promise<any> {
-    return new BluebirdPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
         console.log(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
-
-        // logger.info(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
-
-        extensionHook(this.onStarted, this)
+        
+        runtime.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result) => {
             resolve(result);
           })
