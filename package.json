@@ -3,7 +3,7 @@
   "publishConfig": {
     "registry": "https://www.npmjs.com"
   },
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Tools for the HTTP protocol based on node",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
