@@ -125,8 +125,7 @@ export class HttpExtension implements IHttpExtension {
     return new Promise((resolve, reject) => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
-        console.log(`Started REST API ${this.config.server.host}:${this.config.server.port}`);
-        
+
         runtime.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result) => {
             resolve(result);
