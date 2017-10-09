@@ -1,8 +1,8 @@
 /* tslint:disable:no-empty */
 
-import {RouterDiscoveryTag} from '@process-engine-js/core_contracts';
-import {runtime} from '@process-engine-js/foundation';
-import {IHttpExtension, IHttpRouter} from '@process-engine-js/http_contracts';
+import {RouterDiscoveryTag} from '@essential-projects/core_contracts';
+import {runtime} from '@essential-projects/foundation';
+import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
 import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';

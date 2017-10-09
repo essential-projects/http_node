@@ -1,7 +1,7 @@
 /* tslint:disable:no-empty */
 
-import {runtime} from '@process-engine-js/foundation';
-import {IHttpRouter} from '@process-engine-js/http_contracts';
+import {runtime} from '@essential-projects/foundation';
+import {IHttpRouter} from '@essential-projects/http_contracts';
 import * as Express from 'express';
 
 export class BaseRouter implements IHttpRouter {
