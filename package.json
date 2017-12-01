@@ -30,8 +30,8 @@
     "eslint-config-5minds": "0.1.0",
     "eslint-plugin-import": "^1.14.0",
     "gulp": "^3.9.1",
-    "gulptraum": "^2.2.1",
-    "gulptraum-typescript": "^1.3.2",
+    "gulptraum": "^2.2.4",
+    "gulptraum-typescript": "^1.3.9",
     "tsconfig": "^7.0.0",
     "tslint": "^5.7.0",
     "typescript": "^2.5.2"
