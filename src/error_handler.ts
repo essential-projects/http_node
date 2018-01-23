@@ -1,4 +1,4 @@
-import {BaseError as EssentialProjectsError, ErrorCodes, isError as errorIsEssentialProjectsError} from '@essential-projects/errors.ts';
+import {BaseError as EssentialProjectsError, ErrorCodes, isEssentialProjectsError} from '@essential-projects/errors.ts';
 import {NextFunction, Request, Response} from 'express';
 import {Logger} from 'loggerhythm';
 
@@ -16,7 +16,7 @@ export function errorHandler(error: Error | EssentialProjectsError, request: Req
     logger.warn('Caught something that is not an instanceof Error:', error);
   }
 
-  if (errorIsEssentialProjectsError(error)) {
+  if (isEssentialProjectsError(error)) {
     statusCode = error.code;
   }
 
