@@ -1,4 +1,4 @@
-import {BaseError as EssentialProjectsError} from '@essential-projects/errors';
+import {BaseError as EssentialProjectsError} from '@essential-projects/errors.ts';
 import {NextFunction, Request, Response} from 'express';
 
 function errorIsEssentialProjectsError(error: any): error is EssentialProjectsError {
