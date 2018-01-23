@@ -22,5 +22,7 @@ export function errorHandler(error: Error | EssentialProjectsError, request: Req
     statusCode = error.code;
   }
 
-  response.status(statusCode).send(error.message);
+  response
+    .status(statusCode)
+    .send(responseMessage);
 }
