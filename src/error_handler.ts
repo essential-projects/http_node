@@ -2,7 +2,9 @@ import {BaseError as EssentialProjectsError, ErrorCodes} from '@essential-projec
 import {NextFunction, Request, Response} from 'express';
 import {Logger} from 'loggerhythm';
 
-const logger: Logger = Logger.createLogger('http_node').createChildLogger('error_handler');
+const logger: Logger = Logger
+                        .createLogger('http_node')
+                        .createChildLogger('error_handler');
 
 function errorIsEssentialProjectsError(error: any): error is EssentialProjectsError {
   return error.isEssentialProjectsError === true;
@@ -15,7 +17,7 @@ export function errorHandler(error: Error | EssentialProjectsError, request: Req
   if (error instanceof Error) {
     responseMessage = error.message;
   } else {
-    logger.warn('non-error thrown:', error);
+    logger.warn('Caught something that is not an instanceof Error:', error);
   }
 
   if (errorIsEssentialProjectsError(error)) {
