@@ -7,6 +7,7 @@ import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
 import {Server} from 'http';
+import {errorHandler} from './error_handler';
 
 export class HttpExtension implements IHttpExtension {
 
@@ -150,7 +151,9 @@ export class HttpExtension implements IHttpExtension {
 
   protected initializeMiddlewareBeforeRouters(app): Promise<any> | any { return; }
 
-  protected initializeMiddlewareAfterRouters(app): Promise<any> | any { return; }
+  protected initializeMiddlewareAfterRouters(app): Promise<any> | any {
+    app.use(errorHandler);
+  }
 
   protected filterRouters(routerNames: Array<string>): Promise<Array<string>> | Array<string> {
     return routerNames;
