@@ -1,4 +1,4 @@
-import {BaseError as EssentialProjectsError, ErrorCodes, isEssentialProjectsError} from '@essential-projects/errors.ts';
+import {BaseError as EssentialProjectsError, ErrorCodes, isEssentialProjectsError} from '@essential-projects/errors_ts';
 import {NextFunction, Request, Response} from 'express';
 import {Logger} from 'loggerhythm';
 
