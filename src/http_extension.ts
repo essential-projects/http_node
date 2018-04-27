@@ -139,11 +139,16 @@ export class HttpExtension implements IHttpExtension {
     });
   }
 
-  public close(): void {
+  public async close(): Promise<void> {
 
     if (this.server) {
 
       this.server.close();
+    }
+
+    for (const routerName in this.routers) {
+      const router: any = this.routers[routerName];
+      await runtime.invokeAsPromiseIfPossible(router.dispose, router);
     }
   }
 
