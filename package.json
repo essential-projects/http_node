@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@essential-projects/core_contracts": "^1.0.0",
+    "@essential-projects/core_contracts": "^2.0.0",
     "@essential-projects/errors_ts": "^1.0.0",
     "@essential-projects/foundation": "^1.0.0",
     "@essential-projects/http_contracts": "^1.0.0",
