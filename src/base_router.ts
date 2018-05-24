@@ -1,5 +1,3 @@
-/* tslint:disable:no-empty */
-
 import {runtime} from '@essential-projects/foundation';
 import {IHttpRouter} from '@essential-projects/http_contracts';
 import * as Express from 'express';
@@ -10,20 +8,23 @@ export class BaseRouter implements IHttpRouter {
 
   public config: any = undefined;
 
+  /* tslint:disable-next-line:no-empty */
   constructor() { }
 
   public get router(): Express.Router {
     if (!this._router) {
       this._router = Express.Router();
     }
+
     return this._router;
   }
 
   public get baseRoute(): string {
-    const baseRoute = this.config.baseRoute;
+    const baseRoute: string = this.config.baseRoute;
     if (!baseRoute) {
       return '';
     }
+
     return baseRoute;
   }
 
@@ -32,4 +33,6 @@ export class BaseRouter implements IHttpRouter {
   }
 
   public initializeRouter(): Promise<any> | any { return; }
+
+  public dispose(): Promise<void> | void { return; }
 }
