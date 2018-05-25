@@ -146,9 +146,14 @@ export class HttpExtension implements IHttpExtension {
       await runtime.invokeAsPromiseIfPossible(router.dispose, router);
     }
 
-    if (this.server) {
-      this.server.close();
-    }
+    await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
+
+      if (this.server) {
+        this.server.close(() => {
+          resolve();
+        });
+      }
+    });
   }
 
   protected initializeAppExtensions(app): Promise<any> | any { return; }
