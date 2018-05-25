@@ -52,9 +52,9 @@ export class HttpExtension implements IHttpExtension {
 
   protected initializeRouters(): Promise<void> {
 
-    let routerNames;
+    let routerNames: Array<string>;
 
-    const allRouterNames = this.container.getKeysByTags(RouterDiscoveryTag);
+    const allRouterNames: Array<string> = this.container.getKeysByTags(RouterDiscoveryTag);
 
     this.container.validateDependencies();
 
@@ -98,7 +98,7 @@ export class HttpExtension implements IHttpExtension {
       });
   }
 
-  protected async initializeRouter(routerName): Promise<void> {
+  protected async initializeRouter(routerName: string): Promise<void> {
 
     // logger.debug(`initialize ${routerName}`);
 
@@ -107,7 +107,7 @@ export class HttpExtension implements IHttpExtension {
       throw new Error(`There is no router registered for key '${routerName}'`);
     }
 
-    const routerInstance = await this.container.resolveAsync<IHttpRouter>(routerName);
+    const routerInstance: IHttpRouter = await this.container.resolveAsync<IHttpRouter>(routerName);
 
     this.bindRoute(routerInstance);
     this.routers[routerName] = routerInstance;
@@ -115,7 +115,7 @@ export class HttpExtension implements IHttpExtension {
 
   protected bindRoute(routerInstance: any): void {
 
-    const shieldingRouter = Express.Router();
+    const shieldingRouter: Express.Router = Express.Router();
 
     shieldingRouter.use(`/${routerInstance.baseRoute}/`, routerInstance.router);
 
@@ -123,15 +123,15 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public start(): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: Function, reject: Function): any => {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
 
         runtime.invokeAsPromiseIfPossible(this.onStarted, this)
-          .then((result) => {
+          .then((result: any) => {
             resolve(result);
           })
-          .catch((error) => {
+          .catch((error: any) => {
             reject(error);
           });
       });
@@ -141,14 +141,13 @@ export class HttpExtension implements IHttpExtension {
 
   public async close(): Promise<void> {
 
-    if (this.server) {
-
-      this.server.close();
+    for (const routerName in this.routers) {
+      const router: IHttpRouter = this.routers[routerName];
+      await runtime.invokeAsPromiseIfPossible(router.dispose, router);
     }
 
-    for (const routerName in this.routers) {
-      const router: any = this.routers[routerName];
-      await runtime.invokeAsPromiseIfPossible(router.dispose, router);
+    if (this.server) {
+      this.server.close();
     }
   }
 
