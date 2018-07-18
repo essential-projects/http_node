@@ -1,4 +1,4 @@
-import {RouterDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
+import {routerDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
 import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
 import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
@@ -51,7 +51,7 @@ export class HttpExtension implements IHttpExtension {
 
     let routerNames: Array<string>;
 
-    const allRouterNames: Array<string> = this.container.getKeysByTags(RouterDiscoveryTag);
+    const allRouterNames: Array<string> = this.container.getKeysByTags(routerDiscoveryTag);
 
     this.container.validateDependencies();
 
