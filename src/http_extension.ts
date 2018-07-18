@@ -167,7 +167,7 @@ export class HttpExtension implements IHttpExtension {
   }
 
   // Taken from the foundation, to remove the need for that package.
-  private invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
+  protected invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
 
     return new Promise((resolve: any, reject: any): void => {
 
