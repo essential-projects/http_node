@@ -1,7 +1,4 @@
-/* tslint:disable:no-empty */
-
-import {RouterDiscoveryTag} from '@essential-projects/core_contracts';
-import {runtime} from '@essential-projects/foundation';
+import {routerDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
 import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
 import {Container, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
@@ -43,38 +40,30 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public async initialize(): Promise<void> {
-    await runtime.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app);
+    await this.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app as any);
     this.initializeBaseMiddleware(this.app);
-    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app);
+    await this.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app as any);
     await this.initializeRouters();
-    await runtime.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app);
+    await this.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app as any);
   }
 
   protected initializeRouters(): Promise<void> {
 
     let routerNames: Array<string>;
 
-    const allRouterNames: Array<string> = this.container.getKeysByTags(RouterDiscoveryTag);
+    const allRouterNames: Array<string> = this.container.getKeysByTags(routerDiscoveryTag);
 
     this.container.validateDependencies();
 
-    return runtime.invokeAsPromiseIfPossible(this.filterRouters, this, allRouterNames)
-      .then((filteredRouterNames) => {
+    return this.invokeAsPromiseIfPossible(this.filterRouters, this, allRouterNames)
+      .then((filteredRouterNames: Array<string>) => {
 
         if (typeof filteredRouterNames === 'undefined' || filteredRouterNames === null) {
-
           routerNames = allRouterNames;
-
         } else {
 
           if (!Array.isArray(filteredRouterNames)) {
-
             throw new Error('Filtered router names must be of type Array.');
-
-          } else if (filteredRouterNames.length === 0) {
-
-            // logger.warn(`Array of filtered router names is empty. Check the filterRouters()
-            //   extension hook in your http extension.`);
           }
 
           routerNames = filteredRouterNames;
@@ -99,8 +88,6 @@ export class HttpExtension implements IHttpExtension {
   }
 
   protected async initializeRouter(routerName: string): Promise<void> {
-
-    // logger.debug(`initialize ${routerName}`);
 
     if (!this.container.isRegistered(routerName)) {
 
@@ -127,7 +114,7 @@ export class HttpExtension implements IHttpExtension {
 
       this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
 
-        runtime.invokeAsPromiseIfPossible(this.onStarted, this)
+        this.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result: any) => {
             resolve(result);
           })
@@ -143,7 +130,7 @@ export class HttpExtension implements IHttpExtension {
 
     for (const routerName in this.routers) {
       const router: IHttpRouter = this.routers[routerName];
-      await runtime.invokeAsPromiseIfPossible(router.dispose, router);
+      await this.invokeAsPromiseIfPossible(router.dispose, router);
     }
 
     await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
@@ -172,18 +159,22 @@ export class HttpExtension implements IHttpExtension {
 
   protected initializeBaseMiddleware(app): void {
 
-    // app.use(ExpressLogger('combined', {
-    //   stream: {
-    //     write: function(message: string) {
-    //       logger.info(message);
-    //     }
-    //   }
-    // }));
-
     const opts: any = {};
     if (this.config && this.config.parseLimit) {
       opts.limit = this.config.parseLimit;
     }
     app.use(bodyParser.json(opts));
+  }
+
+  // Taken from the foundation, to remove the need for that package.
+  private async invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
+
+    const isValidFunction: boolean = typeof functionToInvoke === 'function';
+
+    if (!isValidFunction) {
+      return;
+    }
+
+    return await functionToInvoke.call(invocationContext, invocationParameter);
   }
 }
