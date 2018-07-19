@@ -1,6 +1,6 @@
 import {routerDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
 import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
-import {Container, IInstanceWrapper} from 'addict-ioc';
+import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
 import {Server} from 'http';
@@ -8,14 +8,14 @@ import {errorHandler} from './error_handler';
 
 export class HttpExtension implements IHttpExtension {
 
-  private _container: Container<IInstanceWrapper<any>> = undefined;
+  private _container: IContainer<IInstanceWrapper<any>> = undefined;
   private _routers: any = {};
   private _app: Express.Application = undefined;
   protected _server: Server = undefined;
 
   public config: any = undefined;
 
-  constructor(container: Container<IInstanceWrapper<any>>) {
+  constructor(container: IContainer<IInstanceWrapper<any>>) {
     this._container = container;
   }
 
@@ -23,7 +23,7 @@ export class HttpExtension implements IHttpExtension {
     return this._routers;
   }
 
-  public get container(): Container<IInstanceWrapper<any>> {
+  public get container(): IContainer<IInstanceWrapper<any>> {
     return this._container;
   }
 
