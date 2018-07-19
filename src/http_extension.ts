@@ -167,7 +167,7 @@ export class HttpExtension implements IHttpExtension {
   }
 
   // Taken from the foundation, to remove the need for that package.
-  private async invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
+  protected async invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
 
     const isValidFunction: boolean = typeof functionToInvoke === 'function';
 
