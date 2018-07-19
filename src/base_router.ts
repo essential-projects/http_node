@@ -36,26 +36,14 @@ export class BaseRouter implements IHttpRouter {
   public dispose(): Promise<void> | void { return; }
 
   // Taken from the foundation, to remove the need for that package.
-  private invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
+  private async invokeAsPromiseIfPossible(functionToInvoke: any, invocationContext: any, invocationParameter?: Array<any>): Promise<any> {
 
-    return new Promise((resolve: any, reject: any): void => {
+    const isValidFunction: boolean = typeof functionToInvoke === 'function';
 
-      const isValidFunction: boolean = functionToInvoke !== undefined &&
-                                        functionToInvoke !== null &&
-                                        typeof functionToInvoke === 'function';
+    if (!isValidFunction) {
+      return;
+    }
 
-      if (!isValidFunction) {
-        return resolve();
-      }
-
-      let result: any;
-      try {
-        result = functionToInvoke.call(invocationContext, invocationParameter);
-      } catch (error) {
-        return reject(error);
-      }
-
-      resolve(result);
-    });
+    return await functionToInvoke.call(invocationContext, invocationParameter);
   }
 }
