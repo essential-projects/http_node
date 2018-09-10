@@ -1,5 +1,5 @@
-import {routerDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
-import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
+import {routerDiscoveryTag, socketEndpointDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
+import {IHttpExtension, IHttpSocketEndpoint, IHttpRouter} from '@essential-projects/http_contracts';
 import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
@@ -10,9 +10,10 @@ export class HttpExtension implements IHttpExtension {
 
   private _container: IContainer<IInstanceWrapper<any>> = undefined;
   private _routers: any = {};
+  private _socketEndpoints: any = {};
   private _app: Express.Application = undefined;
   protected _server: Server = undefined;
-
+  
   public config: any = undefined;
 
   constructor(container: IContainer<IInstanceWrapper<any>>) {
@@ -21,6 +22,10 @@ export class HttpExtension implements IHttpExtension {
 
   public get routers(): any {
     return this._routers;
+  }
+
+  public get socketEndpoints(): any {
+    return this._socketEndpoints;
   }
 
   public get container(): IContainer<IInstanceWrapper<any>> {
@@ -45,6 +50,16 @@ export class HttpExtension implements IHttpExtension {
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app as any);
     await this.initializeRouters();
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app as any);
+    await this.initializeSocketEndpoints();
+  }
+
+  protected async initializeSocketEndpoints(): Promise<void> {
+
+    const allSocketEndpointNames: Array<string> = this.container.getKeysByTags(socketEndpointDiscoveryTag);
+    
+    for (const socketEndpointName of allSocketEndpointNames) {
+      await this.initializeSocketEndpoint(socketEndpointName);
+    }
   }
 
   protected initializeRouters(): Promise<void> {
@@ -85,6 +100,18 @@ export class HttpExtension implements IHttpExtension {
 
         return serialPromise;
       });
+  }
+
+  protected async initializeSocketEndpoint(socketEndpointName: string): Promise<void> {
+
+    if (!this.container.isRegistered(socketEndpointName)) {
+
+      throw new Error(`There is no socket endpoint registered for key '${socketEndpointName}'`);
+    }
+
+    const socketEndpointInstance: IHttpSocketEndpoint = await this.container.resolveAsync<IHttpSocketEndpoint>(socketEndpointName);
+
+    this.socketEndpoints[socketEndpointName] = socketEndpointInstance;
   }
 
   protected async initializeRouter(routerName: string): Promise<void> {
