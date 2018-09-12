@@ -10,16 +10,7 @@ export class BaseSocketEndpoint implements IHttpSocketEndpoint {
   /* tslint:disable-next-line:no-empty */
   constructor() { }
 
-  public get namespace(): string {
-    const namespace: string = this.config.namespace;
-    if (!namespace) {
-      return '';
-    }
-
-    return namespace;
-  }
-
-  public initializeEndpoint(socketIo: SocketIO.Server): Promise<any> | any { return; }
+  public initializeEndpoint(socketIo: SocketIO.Namespace): Promise<any> | any { return; }
 
   public dispose(): Promise<void> | void { return; }
 }
