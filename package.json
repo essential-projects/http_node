@@ -27,6 +27,7 @@
   "devDependencies": {
     "@essential-projects/tslint-config": "^1.0.0",
     "@types/node": "^8.0.27",
+    "@types/socket.io": "^1.4.38",
     "eslint": "^4.6.1",
     "eslint-config-5minds": "^0.2.0",
     "eslint-plugin-import": "^2.11.0",
