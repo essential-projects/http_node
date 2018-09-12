@@ -1,6 +1,10 @@
-import {IHttpSocketEndpoint} from '@essential-projects/http_contracts';
+import {defaultSocketNamespace, IHttpSocketEndpoint} from '@essential-projects/http_contracts';
 
 export class BaseSocketEndpoint implements IHttpSocketEndpoint {
+
+  public get namespace(): string {
+    return defaultSocketNamespace;
+  }
 
   public initializeEndpoint(socketIo: SocketIO.Namespace): Promise<any> | any { return; }
 
