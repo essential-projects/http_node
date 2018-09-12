@@ -1,9 +1,10 @@
 import {routerDiscoveryTag, socketEndpointDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
-import {IHttpExtension, IHttpSocketEndpoint, IHttpRouter} from '@essential-projects/http_contracts';
+import {defaultSocketNamespace, IHttpExtension, IHttpRouter, IHttpSocketEndpoint} from '@essential-projects/http_contracts';
 import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
 import {Server} from 'http';
+import * as socketIo from 'socket.io';
 import {errorHandler} from './error_handler';
 
 export class HttpExtension implements IHttpExtension {
@@ -13,7 +14,8 @@ export class HttpExtension implements IHttpExtension {
   private _socketEndpoints: any = {};
   private _app: Express.Application = undefined;
   protected _server: Server = undefined;
-  
+  protected _socketServer: SocketIO.Server = undefined;
+
   public config: any = undefined;
 
   constructor(container: IContainer<IInstanceWrapper<any>>) {
@@ -45,18 +47,26 @@ export class HttpExtension implements IHttpExtension {
   }
 
   public async initialize(): Promise<void> {
+    await this.initializeServer();
+
     await this.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app as any);
     this.initializeBaseMiddleware(this.app);
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app as any);
     await this.initializeRouters();
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app as any);
+
     await this.initializeSocketEndpoints();
+  }
+
+  protected initializeServer(): void {
+    this._server = new Server(this._app);
+    this._socketServer = socketIo(this._server);
   }
 
   protected async initializeSocketEndpoints(): Promise<void> {
 
     const allSocketEndpointNames: Array<string> = this.container.getKeysByTags(socketEndpointDiscoveryTag);
-    
+
     for (const socketEndpointName of allSocketEndpointNames) {
       await this.initializeSocketEndpoint(socketEndpointName);
     }
@@ -110,6 +120,13 @@ export class HttpExtension implements IHttpExtension {
     }
 
     const socketEndpointInstance: IHttpSocketEndpoint = await this.container.resolveAsync<IHttpSocketEndpoint>(socketEndpointName);
+
+    const socketEndpointHasNamespace: boolean = !!socketEndpointInstance.namespace && socketEndpointInstance.namespace !== '';
+    const namespace: SocketIO.Namespace = socketEndpointHasNamespace
+      ? this._socketServer.of(socketEndpointInstance.namespace)
+      : this._socketServer.of(defaultSocketNamespace);
+
+    await socketEndpointInstance.initializeEndpoint(namespace);
 
     this.socketEndpoints[socketEndpointName] = socketEndpointInstance;
   }
