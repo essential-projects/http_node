@@ -1,5 +1,4 @@
 import {IHttpSocketEndpoint} from '@essential-projects/http_contracts';
-import '@types/socket.io';
 
 export class BaseSocketEndpoint implements IHttpSocketEndpoint {
 
