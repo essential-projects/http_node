@@ -3,7 +3,7 @@ import {defaultSocketNamespace, IHttpExtension, IHttpRouter, IHttpSocketEndpoint
 import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
-import {Server} from 'http';
+import * as http from 'http';
 import * as socketIo from 'socket.io';
 import {errorHandler} from './error_handler';
 
@@ -13,7 +13,7 @@ export class HttpExtension implements IHttpExtension {
   private _routers: any = {};
   private _socketEndpoints: any = {};
   private _app: Express.Application = undefined;
-  protected _server: Server = undefined;
+  protected _server: http.Server = undefined;
   protected _socketServer: SocketIO.Server = undefined;
 
   public config: any = undefined;
@@ -42,7 +42,7 @@ export class HttpExtension implements IHttpExtension {
     return this._app;
   }
 
-  public get server(): Server {
+  public get server(): http.Server {
     return this._server;
   }
 
@@ -59,7 +59,7 @@ export class HttpExtension implements IHttpExtension {
   }
 
   protected initializeServer(): void {
-    this._server = new Server(this._app);
+    this._server = (http as any).Server(this._app);
     this._socketServer = socketIo(this._server);
   }
 
