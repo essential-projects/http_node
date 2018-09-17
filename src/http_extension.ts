@@ -156,7 +156,7 @@ export class HttpExtension implements IHttpExtension {
   public start(): Promise<any> {
     return new Promise((resolve: Function, reject: Function): any => {
 
-      this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
+      this._server = this.server.listen(this.config.server.port, this.config.server.host, () => {
 
         this.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result: any) => {
