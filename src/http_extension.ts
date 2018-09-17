@@ -3,7 +3,6 @@ import {defaultSocketNamespace, IHttpExtension, IHttpRouter, IHttpSocketEndpoint
 import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
-import * as expressIo from 'express.io';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
 import {errorHandler} from './error_handler';
@@ -37,7 +36,7 @@ export class HttpExtension implements IHttpExtension {
 
   public get app(): Express.Application {
     if (!this._app) {
-      this._app = expressIo();
+      this._app = Express();
     }
 
     return this._app;
@@ -60,11 +59,12 @@ export class HttpExtension implements IHttpExtension {
   }
 
   protected initializeServer(): void {
-    // this._server = (http as any).Server(this._app);
-    // this._socketServer = socketIo(this._server);
-
-    this._server = expressIo.http();
-    this._socketServer = this._server.io();
+    this._server = (http as any).Server(this.app);
+    this._socketServer = socketIo(this.server);
+    this._socketServer.on('connect', (socket: any) => {
+      console.log('client connected');
+      console.log(socket);
+    });
   }
 
   protected async initializeSocketEndpoints(): Promise<void> {
@@ -160,7 +160,7 @@ export class HttpExtension implements IHttpExtension {
   public start(): Promise<any> {
     return new Promise((resolve: Function, reject: Function): any => {
 
-      this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
+      this._server = this.server.listen(this.config.server.port, this.config.server.host, () => {
 
         this.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result: any) => {
