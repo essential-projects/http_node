@@ -61,10 +61,6 @@ export class HttpExtension implements IHttpExtension {
   protected initializeServer(): void {
     this._server = (http as any).Server(this.app);
     this._socketServer = socketIo(this.server);
-    this._socketServer.on('connect', (socket: any) => {
-      console.log('client connected');
-      console.log(socket);
-    });
   }
 
   protected async initializeSocketEndpoints(): Promise<void> {
