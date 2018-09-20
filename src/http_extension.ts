@@ -46,6 +46,10 @@ export class HttpExtension implements IHttpExtension {
     return this._server;
   }
 
+  public get socketServer(): SocketIO.Server {
+    return this._socketServer;
+  }
+
   public async initialize(): Promise<void> {
     await this.initializeServer();
 
@@ -180,8 +184,10 @@ export class HttpExtension implements IHttpExtension {
     await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
 
       if (this.server) {
-        this.server.close(() => {
-          resolve();
+        this._socketServer.close(() => {
+          this.server.close(() => {
+            resolve();
+          });
         });
       }
     });
