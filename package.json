@@ -34,7 +34,7 @@
     "tsconfig": "7.0.0",
     "tslint": "5.10.0",
     "typescript": "2.8.1",
-    "@types/node": "^8.0.27",
+    "@types/node": "8.10.10",
     "eslint": "4.19.1",
     "eslint-config-5minds": "0.2.1",
     "eslint-plugin-import": "2.14.0"
