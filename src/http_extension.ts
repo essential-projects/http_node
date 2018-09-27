@@ -13,7 +13,7 @@ export class HttpExtension implements IHttpExtension {
   private _routers: any = {};
   private _socketEndpoints: any = {};
   private _app: Express.Application = undefined;
-  protected _server: http.Server = undefined;
+  protected _httpServer: http.Server = undefined;
   protected _socketServer: SocketIO.Server = undefined;
 
   public config: any = undefined;
@@ -42,8 +42,8 @@ export class HttpExtension implements IHttpExtension {
     return this._app;
   }
 
-  public get server(): http.Server {
-    return this._server;
+  public get httpServer(): http.Server {
+    return this._httpServer;
   }
 
   public get socketServer(): SocketIO.Server {
@@ -63,8 +63,8 @@ export class HttpExtension implements IHttpExtension {
   }
 
   protected initializeServer(): void {
-    this._server = (http as any).Server(this.app);
-    this._socketServer = socketIo(this.server);
+    this._httpServer = (http as any).Server(this.app);
+    this._socketServer = socketIo(this.httpServer);
   }
 
   protected async initializeSocketEndpoints(): Promise<void> {
@@ -160,7 +160,7 @@ export class HttpExtension implements IHttpExtension {
   public start(): Promise<any> {
     return new Promise((resolve: Function, reject: Function): any => {
 
-      this._server = this.server.listen(this.config.server.port, this.config.server.host, () => {
+      this._httpServer = this.httpServer.listen(this.config.server.port, this.config.server.host, () => {
 
         this.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result: any) => {
@@ -183,9 +183,9 @@ export class HttpExtension implements IHttpExtension {
 
     await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
 
-      if (this.server) {
+      if (this.httpServer) {
         this._socketServer.close(() => {
-          this.server.close(() => {
+          this.httpServer.close(() => {
             resolve();
           });
         });

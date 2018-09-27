@@ -1,7 +1,7 @@
 import {IHttpRouter} from '@essential-projects/http_contracts';
 import * as Express from 'express';
 
-export class BaseRouter implements IHttpRouter {
+export abstract class BaseRouter implements IHttpRouter {
 
   private _router: Express.Router = undefined;
 
@@ -31,8 +31,12 @@ export class BaseRouter implements IHttpRouter {
     return this.invokeAsPromiseIfPossible(this.initializeRouter, this);
   }
 
-  public initializeRouter(): Promise<any> | any { return; }
+  public abstract initializeRouter(): Promise<any> | any;
 
+  /**
+   * If any resources need to be disposed when the serves closes down, this
+   * method can be implemented in the inheriting class.
+   */
   public dispose(): Promise<void> | void { return; }
 
   // Taken from the foundation, to remove the need for that package.
