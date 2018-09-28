@@ -1,17 +1,20 @@
-import {routerDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
-import {IHttpExtension, IHttpRouter} from '@essential-projects/http_contracts';
+import {routerDiscoveryTag, socketEndpointDiscoveryTag} from '@essential-projects/bootstrapper_contracts';
+import {defaultSocketNamespace, IHttpExtension, IHttpRouter, IHttpSocketEndpoint} from '@essential-projects/http_contracts';
 import {IContainer, IInstanceWrapper} from 'addict-ioc';
 import * as bodyParser from 'body-parser';
 import * as Express from 'express';
-import {Server} from 'http';
+import * as http from 'http';
+import * as socketIo from 'socket.io';
 import {errorHandler} from './error_handler';
 
 export class HttpExtension implements IHttpExtension {
 
   private _container: IContainer<IInstanceWrapper<any>> = undefined;
   private _routers: any = {};
+  private _socketEndpoints: any = {};
   private _app: Express.Application = undefined;
-  protected _server: Server = undefined;
+  protected _httpServer: http.Server = undefined;
+  protected _socketServer: SocketIO.Server = undefined;
 
   public config: any = undefined;
 
@@ -21,6 +24,10 @@ export class HttpExtension implements IHttpExtension {
 
   public get routers(): any {
     return this._routers;
+  }
+
+  public get socketEndpoints(): any {
+    return this._socketEndpoints;
   }
 
   public get container(): IContainer<IInstanceWrapper<any>> {
@@ -35,16 +42,38 @@ export class HttpExtension implements IHttpExtension {
     return this._app;
   }
 
-  public get server(): Server {
-    return this._server;
+  public get httpServer(): http.Server {
+    return this._httpServer;
+  }
+
+  public get socketServer(): SocketIO.Server {
+    return this._socketServer;
   }
 
   public async initialize(): Promise<void> {
+    await this.initializeServer();
+
     await this.invokeAsPromiseIfPossible(this.initializeAppExtensions, this, this.app as any);
     this.initializeBaseMiddleware(this.app);
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareBeforeRouters, this, this.app as any);
     await this.initializeRouters();
     await this.invokeAsPromiseIfPossible(this.initializeMiddlewareAfterRouters, this, this.app as any);
+
+    await this.initializeSocketEndpoints();
+  }
+
+  protected initializeServer(): void {
+    this._httpServer = (http as any).Server(this.app);
+    this._socketServer = socketIo(this.httpServer);
+  }
+
+  protected async initializeSocketEndpoints(): Promise<void> {
+
+    const allSocketEndpointNames: Array<string> = this.container.getKeysByTags(socketEndpointDiscoveryTag);
+
+    for (const socketEndpointName of allSocketEndpointNames) {
+      await this.initializeSocketEndpoint(socketEndpointName);
+    }
   }
 
   protected initializeRouters(): Promise<void> {
@@ -87,6 +116,25 @@ export class HttpExtension implements IHttpExtension {
       });
   }
 
+  protected async initializeSocketEndpoint(socketEndpointName: string): Promise<void> {
+
+    if (!this.container.isRegistered(socketEndpointName)) {
+
+      throw new Error(`There is no socket endpoint registered for key '${socketEndpointName}'`);
+    }
+
+    const socketEndpointInstance: IHttpSocketEndpoint = await this.container.resolveAsync<IHttpSocketEndpoint>(socketEndpointName);
+
+    const socketEndpointHasNamespace: boolean = !!socketEndpointInstance.namespace && socketEndpointInstance.namespace !== '';
+    const namespace: SocketIO.Namespace = socketEndpointHasNamespace
+      ? this._socketServer.of(socketEndpointInstance.namespace)
+      : this._socketServer.of(defaultSocketNamespace);
+
+    await socketEndpointInstance.initializeEndpoint(namespace);
+
+    this.socketEndpoints[socketEndpointName] = socketEndpointInstance;
+  }
+
   protected async initializeRouter(routerName: string): Promise<void> {
 
     if (!this.container.isRegistered(routerName)) {
@@ -112,7 +160,7 @@ export class HttpExtension implements IHttpExtension {
   public start(): Promise<any> {
     return new Promise((resolve: Function, reject: Function): any => {
 
-      this._server = this.app.listen(this.config.server.port, this.config.server.host, () => {
+      this._httpServer = this.httpServer.listen(this.config.server.port, this.config.server.host, () => {
 
         this.invokeAsPromiseIfPossible(this.onStarted, this)
           .then((result: any) => {
@@ -135,9 +183,11 @@ export class HttpExtension implements IHttpExtension {
 
     await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
 
-      if (this.server) {
-        this.server.close(() => {
-          resolve();
+      if (this.httpServer) {
+        this._socketServer.close(() => {
+          this.httpServer.close(() => {
+            resolve();
+          });
         });
       }
     });
