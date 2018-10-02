@@ -183,6 +183,12 @@ export class HttpExtension implements IHttpExtension {
 
     await new Promise(async(resolve: Function, reject: Function): Promise<void> => {
 
+      const connectedSockets: Array<socketIo.Socket> = Object.values(this.socketServer.of('/').connected);
+
+      connectedSockets.forEach((socket: socketIo.Socket): void => {
+        socket.disconnect(true);
+      });
+
       if (this.httpServer) {
         this._socketServer.close(() => {
           this.httpServer.close(() => {
