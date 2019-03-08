@@ -13,7 +13,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@essential-projects/http_contracts": "~2.3.0",
+    "@essential-projects/http_contracts": "feature~socket_adapter",
+    "@essential-projects/websocket_contracts": "feature~add_basic_implementation",
     "express": "~4.16.4",
     "socket.io": "~2.2.0"
   },

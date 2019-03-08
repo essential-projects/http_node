@@ -1,4 +1,5 @@
 import {defaultSocketNamespace, IHttpSocketEndpoint} from '@essential-projects/http_contracts';
+import {IEndpointSocketScope} from '@essential-projects/websocket_contracts';
 
 export abstract class BaseSocketEndpoint implements IHttpSocketEndpoint {
 
@@ -6,7 +7,7 @@ export abstract class BaseSocketEndpoint implements IHttpSocketEndpoint {
     return defaultSocketNamespace;
   }
 
-  public abstract initializeEndpoint(socketIo: SocketIO.Namespace): Promise<any> | any;
+  public abstract initializeEndpoint(endpoint: IEndpointSocketScope): Promise<any> | any;
 
   /**
    * If any resources need to be disposed when the serves closes down, this
