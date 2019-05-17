@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@essential-projects/http_contracts": "~2.3.0",
+    "@essential-projects/http_contracts": "feature~change_to_eslint_and_tsc",
     "express": "~4.16.4",
     "socket.io": "~2.2.0"
   },
