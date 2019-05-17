@@ -1,3 +1,4 @@
+/* eslint-disable no-return-await */
 import {IHttpRouter} from '@essential-projects/http_contracts';
 import * as express from 'express';
 
@@ -45,7 +46,7 @@ export abstract class BaseRouter implements IHttpRouter {
       return Promise.resolve();
     }
 
-    return functionToInvoke.call(invocationContext, invocationParameter);
+    return await functionToInvoke.call(invocationContext, invocationParameter);
   }
 
 }
