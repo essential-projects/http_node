@@ -1,4 +1,4 @@
-import {defaultSocketNamespace, IHttpSocketEndpoint} from '@essential-projects/http_contracts';
+import {IHttpSocketEndpoint, defaultSocketNamespace} from '@essential-projects/http_contracts';
 
 export abstract class BaseSocketEndpoint implements IHttpSocketEndpoint {
 
@@ -12,5 +12,6 @@ export abstract class BaseSocketEndpoint implements IHttpSocketEndpoint {
    * If any resources need to be disposed when the serves closes down, this
    * method can be implemented in the inheriting class.
    */
-  public dispose(): Promise<void> | void { return; }
+  public dispose(): Promise<void> | void { }
+
 }
